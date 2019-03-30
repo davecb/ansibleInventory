@@ -1,0 +1,78 @@
+#!/bin/sh
+#
+# transitiveClosureGroupvars -- populate some more columns
+#
+ProgName=`basename $0`
+
+main() {
+	if [ ! -f "./hostAndPdc.csv" ]; then
+		say "The file hostAndPdc.csv is missing, halting"
+		exit 1
+	fi
+	say "this has not been implemented yet"
+	exit 1
+
+	dirs=$(find . -name 'group_vars')
+	files=$(find $dirs -type f)
+
+	cat hostAndPdc.csv |\
+	grep -v '^#' |\
+	while read host pdc junk; do
+		echo "host=$host"
+		grep -l $host $files
+		#if [ "$cantidates" != "" ]; then
+		#	echo "found $cantidates"
+		#	exit
+		#fi
+#		cat <<!
+#{ 
+#	host:'$host', 
+#	pdc:'$pdc', 
+#		$(getGroupVars $host $dirs)
+#},
+#!
+	done
+}
+
+#
+# getGroupVars -- get variables from a group_vars file
+#
+getGroupVars() {
+	local adServer=$1
+	shift
+	echo "look for $adServer below $@"
+	for i in "$@"; do
+		if [ -f $i ]; then
+			fred $adServer $i
+		else
+			for j in $i/*; do
+				if [ -f $j ]; then
+					fred $adServer $j
+				fi
+			done
+		fi
+	done
+}
+
+#
+# fred -- evaluate a group_vars file
+#
+fred() {
+	local host=$1
+	local path=$2
+
+	echo "fred: look for $host in $path"
+	grep $host $path
+	#if [ "$present" != "" ]; then
+	#	echo "$hosts is in $path"
+	#else
+	#	echo "$1 is NOT in $2"
+	#fi
+}
+
+
+say() {
+	echo "$@" 1>&2
+}
+
+main "$@"

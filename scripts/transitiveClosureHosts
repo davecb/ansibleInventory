@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# transitiveClosureHosts -- for ebery host, find it's vars
+#
+#
+ProgName=`basename $0`
+
+main() {
+	dir=$1
+	hosts=`hosts`
+	echo "$hosts"
+}
+
+hosts() {
+	# iterate across all PDCs to get a hosts list
+	# Record the PDC on the way
+	(cd $dir; 
+	echo "#host PDC"
+	for i in DC*; do
+		cat $i/hosts |
+		egrep -v '\[|^[\t ]*$' |
+		while read j ; do
+			echo $j $i
+		done
+	done |\
+	sort ) > hostAndPdc.csv
+}
+
+say() {
+	echo "$@" 1>&2
+}
+
+main "$@"

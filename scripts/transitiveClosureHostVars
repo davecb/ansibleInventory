@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# transitiveClosureHostvars -- populate the rest of the columns
+#
+ProgName=`basename $0`
+
+main() {
+	dir=$1
+	if [ ! -f "./hostAndPdc.csv" ]; then
+		say "The file hostAndPdc.csv is missing, halting"
+		exit 1
+	fi
+
+	echo "["
+	cat hostAndPdc.csv |\
+	(cd $dir
+	grep -v '^#' |\
+	while read host pdc junk; do
+		file=$(for i in $(find . -name 'host_vars'); do
+			if [ -f "$i/$host" ]; then
+				echo "$i/$host"
+			fi
+		done)
+		cat <<!
+{ host:'$host', pdc:'$pdc', $(getVars $file) },
+!
+	done
+	echo "]")
+}
+
+#
+# getvars - -get variables from a host_var file
+#
+getVars() {
+	cat $1 |\
+	awk '
+	/idrac_password:/ { next }
+	/:/ {
+		printf(" %s, ", $0)
+	}
+'
+}
+
+
+#
+# getParsedVar -- get one var
+#
+getParsedVar() {
+	cat $2 | awk '/'$1':/ { print $2 }'
+}
+
+say() {
+	echo "$@" 1>&2
+}
+
+main "$@"
