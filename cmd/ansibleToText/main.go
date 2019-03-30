@@ -1,6 +1,6 @@
 package  main
 
-import "gitlab.indexexchange.com/dave.collier-brown/inventoryTree/pkg/tree"
+import "github.com/davecb/inventoryTree/pkg/tree"
 
 func main() {
 	// parse options
