@@ -23,7 +23,7 @@ func AnsibleToText(inventoryDir, output string) {
 }
 
 
-// InventoryHost is a superset of Paul Greenber's struct of the same name
+// InventoryHost is a superset of Paul Greenberg's struct of the same name
 type InventoryHost struct {
 	DC	string
 	db.InventoryHost
